@@ -35,9 +35,8 @@ m_day(0)
 	struct tm* tm = ::gmtime(&timestamp);
 
 	wxString text;
-	text.Printf(wxT("%s-%04d-%02d-%02d"), m_name.c_str(), tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
+	text.Printf(wxT("%s"), m_name.c_str());
 
-	m_day = tm->tm_yday;
 	m_fileName.SetName(text);
 
 	bool ret = m_file->Open(m_fileName.GetFullPath(), wxT("a+t"));
@@ -93,23 +92,6 @@ void CLogger::DoLogString(const wxChar* msg, time_t timestamp)
 	wxASSERT(msg != NULL);
 
 	struct tm* tm = ::gmtime(&timestamp);
-
-	int day = tm->tm_yday;
-	if (day != m_day) {
-		wxString text;
-		text.Printf(wxT("%s-%04d-%02d-%02d"), m_name.c_str(), tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday);
-
-		m_day = day;
-		m_fileName.SetName(text);
-
-		m_file->Close();
-
-		bool ret = m_file->Open(m_fileName.GetFullPath(), wxT("a+t"));
-		if (!ret) {
-			wxLogError(wxT("Cannot open %s file for appending"), m_fileName.GetFullPath().c_str());
-			return;
-		}
-	}
 
 	m_file->Write(wxString(msg));
 	m_file->Flush();
